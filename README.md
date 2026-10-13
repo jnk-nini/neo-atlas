@@ -70,12 +70,10 @@ Nothing is stored on a server:
 
 ## Running locally
 
-1. Start the AegisNEO API from the repository root:
-   ```bash
-   python -m uvicorn index:app --port 8000
-   ```
-2. In this folder, copy `.env.example` to `.env.local` and set `AEGISNEO_API_KEY` to a key the API accepts.
-3. Install and run:
+It uses the live AegisNEO API at https://aegisneo-api.vercel.app.
+
+1. Copy `.env.example` to `.env.local`. It already has the live API address and the public demo key.
+2. Install and run:
    ```bash
    npm install
    npm run dev
@@ -83,11 +81,13 @@ Nothing is stored on a server:
 
 Other scripts: `npm test` (unit tests), `npm run lint`, `npm run build`.
 
+To run the API on your own computer instead, see the [AegisNEO API repository](https://github.com/jnk-nini/aegisneo-api) and set `AEGISNEO_API_URL=http://127.0.0.1:8000`.
+
 ## Deploying
 
 NEO Atlas is deployed as its own Vercel project, separate from the API and the main site:
 
-1. Create a new Vercel project from this repository and set **Root Directory** to `neo-atlas`.
+1. Create a new Vercel project from this repository and leave **Root Directory** as `./`.
 2. Add environment variables:
    - `AEGISNEO_API_KEY`: the key issued to NEO Atlas.
    - `AEGISNEO_API_URL`: `https://aegisneo-api.vercel.app` (optional; this is the default).

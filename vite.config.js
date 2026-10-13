@@ -29,7 +29,7 @@ function neoProxy() {
 export default defineConfig(({ mode }) => {
   // Read .env files from this folder, wherever the dev server was started from.
   const env = loadEnv(mode, root, "");
-  process.env.AEGISNEO_API_URL ??= env.AEGISNEO_API_URL || "http://127.0.0.1:8000";
+  process.env.AEGISNEO_API_URL ??= env.AEGISNEO_API_URL || "https://aegisneo-api.vercel.app";
   process.env.AEGISNEO_API_KEY ??= env.AEGISNEO_API_KEY || "";
   if (mode === "development" && !process.env.AEGISNEO_API_KEY) {
     console.warn("[neo-atlas] AEGISNEO_API_KEY is not set — copy .env.example to .env.local.");
