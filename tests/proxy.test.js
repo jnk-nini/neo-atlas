@@ -29,7 +29,8 @@ describe("api/neo proxy", () => {
     const [url, init] = globalThis.fetch.mock.calls[0];
     expect(url.toString()).toBe("https://api.example.test/api/v1/asteroids?search=1987-&limit=100");
     expect(init.headers["x-api-key"]).toBe("test-key");
-    expect(res.headers["Cache-Control"]).toContain("s-maxage");
+    expect(res.headers["Cache-Control"]).toContain("private");
+    expect(res.headers.Vary).toBe("x-aegisneo-ticket");
   });
 
   it("rejects unknown parameters, so they can't be used to skip the edge cache", async () => {
