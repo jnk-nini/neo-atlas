@@ -46,19 +46,25 @@ export default async function handler(req, res) {
     if (ALLOWED_PARAMS.has(key)) url.searchParams.set(key, String(value).slice(0, MAX_PARAM_LENGTH));
   }
 
+  // The visitor's ticket from the AegisNEO hub (see src/lib/hub.js). It makes the API serve this
+  // visitor by their role instead of as a guest. Only a well-formed token is passed on.
+  const ticket = String(req.headers?.["x-aegisneo-ticket"] || "");
+  const headers = { "x-api-key": apiKey };
+  if (/^[\w-]+\.[\w-]+\.[\w-]+$/.test(ticket) && ticket.length < 2000)
+    headers.authorization = `Bearer ${ticket}`;
+
   try {
     const upstream = await fetch(url, {
-      headers: { "x-api-key": apiKey },
+      headers,
       signal: AbortSignal.timeout(15000),
     });
     const body = await upstream.text();
-    // The catalog is a fixed historical dataset, so successful answers can be
-    // cached at the edge for a long time.
+    // The catalog is a fixed historical dataset, so a visitor's browser may keep answers for a day.
     res.setHeader("Content-Type", "application/json");
-    res.setHeader(
-      "Cache-Control",
-      upstream.ok ? "public, s-maxage=86400, stale-while-revalidate=604800" : "no-store",
-    );
+    // The answer depends on who is asking (a ticket means the whole catalog, none means a guest's
+    // 10 featured asteroids), so a shared cache must not keep it: only the visitor's own browser may.
+    res.setHeader("Vary", "x-aegisneo-ticket");
+    res.setHeader("Cache-Control", upstream.ok ? "private, max-age=86400" : "no-store");
     return res.status(upstream.status).send(body);
   } catch (err) {
     const timedOut = err && err.name === "TimeoutError";

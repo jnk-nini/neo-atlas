@@ -18,9 +18,13 @@ function neoProxy() {
         const url = new URL(req.url, "http://localhost");
         const query = { ...Object.fromEntries(url.searchParams), path: url.pathname.slice(1) };
         res.status = (code) => ((res.statusCode = code), res);
-        res.json = (body) => (res.setHeader("Content-Type", "application/json"), res.end(JSON.stringify(body)), res);
+        res.json = (body) => (
+          res.setHeader("Content-Type", "application/json"),
+          res.end(JSON.stringify(body)),
+          res
+        );
         res.send = (body) => (res.end(body), res);
-        handler({ method: req.method, query }, res);
+        handler({ method: req.method, query, headers: req.headers }, res);
       });
     },
   };

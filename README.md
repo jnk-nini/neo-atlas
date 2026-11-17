@@ -57,6 +57,24 @@ The browser never sees the API key. It calls `/api/neo/*` on this site, and a sm
 endpoints and their parameters; anything else is refused, so made-up parameters can't skip the edge cache.
 In development, the Vite dev server runs the same function ([`vite.config.js`](vite.config.js)).
 
+## Access from the AegisNEO hub
+
+The AegisNEO main site ([hub](https://aegisneo-api.vercel.app/frontend/)) is where visitors sign in. When it opens
+NEO Atlas for an account, it adds a short-lived, read-only **ticket** to the address (`#aegis_ticket=...`). The site
+keeps it for that tab, removes it from the address bar, and sends it with every request to its own server function
+(`api/neo.js`), which passes it to the API next to the site's key. The API then serves the visitor by their role
+(the rules are the `site_access` table):
+
+| Visitor | What the API returns on this site |
+| --- | --- |
+| Opened from the hub with an account (user or admin) | the whole catalog |
+| No ticket (opened directly, or as a hub guest) | 10 featured asteroids |
+| Ticket expired (4 hours by default) | the site drops it, serves a guest and shows "Session ended" |
+
+A small badge at the bottom left shows who is signed in and links back to the hub (`src/lib/hub.js`). A ticket only
+works with this site's key and can never change data. Because the answer now depends on the visitor, the proxy sends
+`Cache-Control: private` and `Vary: x-aegisneo-ticket` instead of caching at the edge.
+
 ## No database
 
 Nothing is stored on a server:

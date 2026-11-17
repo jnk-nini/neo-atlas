@@ -2,6 +2,8 @@
 // (vite.config.js) or the Vercel function (api/neo.js) forwards to the API
 // with the key attached — the browser never sees the key.
 
+import { dropTicket, getTicket } from "./hub.js";
+
 const BASE = "/api/neo";
 // Longer than the server function's own 15 s limit, so its "took too long" answer arrives before this gives up.
 const TIMEOUT_MS = 20000;
@@ -29,7 +31,15 @@ async function fetchOnce(url, signal) {
   signal?.addEventListener("abort", onAbort);
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
-    const response = await fetch(url, { signal: controller.signal, headers: { Accept: "application/json" } });
+    const ticket = getTicket();
+    const headers = { Accept: "application/json" };
+    if (ticket) headers["x-aegisneo-ticket"] = ticket;
+    const response = await fetch(url, { signal: controller.signal, headers });
+    if (response.status === 401 && ticket) {
+      // The ticket ran out or was refused: carry on as a guest.
+      dropTicket();
+      return fetchOnce(url, signal);
+    }
     if (!response.ok) throw new ApiError(messageFor(response.status), response.status);
     return await response.json();
   } catch (err) {
