@@ -59,7 +59,7 @@ In development, the Vite dev server runs the same function ([`vite.config.js`](v
 
 ## Access from the AegisNEO hub
 
-The AegisNEO main site ([hub](https://aegisneo-api.vercel.app/frontend/)) is where visitors sign in. When it opens
+The AegisNEO main site ([hub](https://aegisneo-hub.vercel.app/)) is where visitors sign in. When it opens
 NEO Atlas for an account, it adds a short-lived, read-only **ticket** to the address (`#aegis_ticket=...`). The site
 keeps it for that tab, removes it from the address bar, and sends it with every request to its own server function
 (`api/neo.js`), which passes it to the API next to the site's key. The API then serves the visitor by their role

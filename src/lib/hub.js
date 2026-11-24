@@ -6,8 +6,8 @@
 
 const STORAGE_KEY = "aegis_ticket";
 const FRAGMENT_KEY = "aegis_ticket";
-const HUB_URL = "https://aegisneo-api.vercel.app/frontend/hub.html";
-const AUTH_URL = "https://aegisneo-api.vercel.app/frontend/auth.html";
+const HUB_URL = "https://aegisneo-hub.vercel.app/hub";
+const AUTH_URL = "https://aegisneo-hub.vercel.app/auth";
 
 let expired = false;
 
