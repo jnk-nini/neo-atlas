@@ -1,4 +1,5 @@
 import { HIGHLIGHTS, highlightCounts } from "../lib/highlights.js";
+import { AUTH_URL, isGuest } from "../lib/hub.js";
 
 /**
  * Under the chart: what it shows in one line, a hint on what to do, and one big
@@ -78,9 +79,16 @@ export default function SkySummary({
           </>
         )}
       </p>
-      <p className="sky-hint">
-        Tap a star to meet it<span className="sky-sim"> · dates simulated</span>
-      </p>
+      {asteroids.length === 0 && !heading && isGuest() ? (
+        <p className="sky-hint sky-guest">
+          Guests see only 10 featured asteroids, so this {when.startsWith("in ") ? "year" : "day"} is empty.{" "}
+          <a href={AUTH_URL}>Sign in</a> to chart the whole catalog.
+        </p>
+      ) : (
+        <p className="sky-hint">
+          Tap a star to meet it<span className="sky-sim"> · dates simulated</span>
+        </p>
+      )}
       {notice && (
         <p className="sky-notice" role="alert">
           {notice.text}
