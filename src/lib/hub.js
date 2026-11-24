@@ -95,31 +95,84 @@ function status() {
 
 let pill = null;
 
+// One stylesheet for the badge. On a wide screen it is a pill at the bottom left. On a phone the
+// bottom of the screen belongs to the app's own controls (tabs, the launch button), so it shrinks
+// to a small status dot at the top; tapping the dot opens the details.
+const PILL_CSS = `
+.aegis-pill{position:fixed;left:10px;bottom:10px;z-index:30;display:flex;align-items:center;gap:8px;
+padding:7px 12px;border-radius:999px;font:500 12px system-ui,sans-serif;color:#eef2f9;
+background:rgba(10,14,24,.88);border:1px solid rgba(148,163,184,.3);backdrop-filter:blur(8px);
+max-width:calc(100vw - 20px);pointer-events:auto}
+.aegis-pill .aegis-dot{width:8px;height:8px;border-radius:50%;flex:none}
+.aegis-pill .aegis-body{display:flex;align-items:center;gap:8px;min-width:0}
+.aegis-pill .aegis-link{color:#3ee0e8;text-decoration:none;font-weight:600;margin-left:4px;white-space:nowrap}
+.aegis-pill .aegis-toggle{display:none}
+@media (max-width:700px){
+.aegis-pill{left:auto;right:var(--aegis-pill-right,12px);top:calc(env(safe-area-inset-top,0px) + 10px);bottom:auto;padding:0;gap:0;
+width:30px;height:30px;justify-content:center;border-radius:15px}
+.aegis-pill .aegis-body{display:none}
+.aegis-pill .aegis-toggle{display:flex;align-items:center;justify-content:center;width:30px;height:30px;padding:0;
+background:none;border:0;border-radius:15px;cursor:pointer}
+.aegis-pill[data-open="true"]{width:auto;height:auto;padding:8px 12px;border-radius:14px;right:10px;top:calc(env(safe-area-inset-top,0px) + 48px);
+flex-direction:column;align-items:flex-start;gap:6px;max-width:min(300px,calc(100vw - 20px))}
+.aegis-pill[data-open="true"] .aegis-body{display:flex;flex-wrap:wrap}
+.aegis-pill[data-open="true"] .aegis-toggle{position:absolute;right:-1px;top:-40px}
+}`;
+
 function renderPill() {
   if (!pill) return;
   const { kind, text, link } = status();
+  const color = kind === "user" ? "#4ade80" : "#f5a524";
   pill.replaceChildren();
+
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "aegis-toggle";
+  toggle.setAttribute("aria-label", `AegisNEO account: ${text}`);
+  toggle.setAttribute("aria-expanded", String(pill.dataset.open === "true"));
+  const toggleDot = document.createElement("span");
+  toggleDot.className = "aegis-dot";
+  toggleDot.style.background = color;
+  toggle.append(toggleDot);
+  toggle.addEventListener("click", () => {
+    const open = pill.dataset.open !== "true";
+    pill.dataset.open = String(open);
+    toggle.setAttribute("aria-expanded", String(open));
+  });
+
+  const body = document.createElement("div");
+  body.className = "aegis-body";
   const dot = document.createElement("span");
-  dot.style.cssText = `width:8px;height:8px;border-radius:50%;flex:none;background:${kind === "user" ? "#4ade80" : "#f5a524"}`;
+  dot.className = "aegis-dot";
+  dot.style.background = color;
   const label = document.createElement("span");
   label.textContent = text;
   const anchor = document.createElement("a");
+  anchor.className = "aegis-link";
   anchor.textContent = link[0];
   anchor.href = link[1];
-  anchor.style.cssText = "color:#3ee0e8;text-decoration:none;font-weight:600;margin-left:4px";
-  pill.append(dot, label, anchor);
+  body.append(dot, label, anchor);
+  pill.append(toggle, body);
 }
 
-/** A small badge at the bottom left: who is signed in, and the way back to the hub. */
-export function mountHubPill() {
+/** A small badge: who is signed in, and the way back to the hub. `narrowRight` keeps it clear of
+ *  a control the app has in the top right corner of a phone screen. */
+export function mountHubPill({ narrowRight = 12 } = {}) {
   if (pill || typeof document === "undefined") return;
+  const style = document.createElement("style");
+  style.textContent = PILL_CSS;
+  document.head.appendChild(style);
   pill = document.createElement("div");
+  pill.className = "aegis-pill";
   pill.setAttribute("role", "status");
-  pill.style.cssText =
-    "position:fixed;left:10px;bottom:10px;z-index:30;display:flex;align-items:center;gap:8px;" +
-    "padding:7px 12px;border-radius:999px;font:500 12px system-ui,sans-serif;color:#eef2f9;" +
-    "background:rgba(10,14,24,.88);border:1px solid rgba(148,163,184,.3);backdrop-filter:blur(8px);" +
-    "max-width:calc(100vw - 20px);pointer-events:auto";
+  pill.style.setProperty("--aegis-pill-right", `${narrowRight}px`);
   document.body.appendChild(pill);
   renderPill();
 }
+
+/** True when the visitor has no ticket from the hub: the API then serves only the featured asteroids. */
+export function isGuest() {
+  return !getTicket();
+}
+
+export { AUTH_URL };

@@ -24,7 +24,7 @@ Live site: **https://neo-atlas-pearl.vercel.app**
   made-up meanings, and it says so.
 - **Star Match.** Someone who receives a birthday postcard adds their own birthday, and the two
   constellations are joined into one, with a playful match score and a reply postcard ready to send.
-- **Sealed postcards.** Send one early: the link shows a sealed envelope and a countdown until the birthday.
+- **Sealed postcards.** Send one early: the link shows a sealed envelope and a countdown until the birthday. The seal is a surprise, not a secret: the message travels in the link (nothing is stored on a server), and the countdown follows the receiver's device clock.
 - **The full atlas.** Every star is a real asteroid: tap for its size, speed and how close it came; browse
   by year or date, as a chart or a list; save constellations, export and import them.
 
@@ -90,7 +90,7 @@ Nothing is stored on a server:
 
 It uses the live AegisNEO API at https://aegisneo-api.vercel.app.
 
-1. Copy `.env.example` to `.env.local`. It already has the live API address and the public demo key.
+1. Copy `.env.example` to `.env.local`. It has the live API address; add this site's partner key (ask the project owner) as `AEGISNEO_API_KEY`.
 2. Install and run:
    ```bash
    npm install

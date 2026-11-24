@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import handler from "../api/neo.js";
-import { readTicketFromHash, ticketClaims } from "../src/lib/hub.js";
+import { isGuest, readTicketFromHash, ticketClaims } from "../src/lib/hub.js";
 
 const TICKET =
   `${btoa('{"alg":"HS256"}')}.${btoa(JSON.stringify({ username: "bob", role: "user", exp: 4102444800 }))}.sig_-x`.replace(
@@ -16,6 +16,12 @@ function mockRes() {
   res.send = (text) => ((res.body = text), res);
   return res;
 }
+
+describe("guest check", () => {
+  it("is a guest when no ticket was handed over", () => {
+    expect(isGuest()).toBe(true);
+  });
+});
 
 describe("ticket from the AegisNEO hub", () => {
   it("is read from the URL fragment", () => {

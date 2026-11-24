@@ -767,6 +767,9 @@ a {
   border: 1px solid rgba(239, 123, 95, 0.5);
   border-radius: var(--radius);
 }
+.sky-guest a {
+  color: var(--gold-bright);
+}
 .sky-hint {
   margin: -4px 0 0;
   color: var(--paper-muted);
@@ -1774,9 +1777,7 @@ form.draw-bar .text-input {
   margin: 0;
   border: 0;
   border-radius: 0;
-  background:
-    radial-gradient(ellipse at 50% 30%, rgba(201, 164, 92, 0.1), transparent 60%),
-    var(--ink-deep);
+  background: radial-gradient(ellipse at 50% 30%, rgba(201, 164, 92, 0.1), transparent 60%), var(--ink-deep);
 }
 .postcard-canvas {
   display: block;
