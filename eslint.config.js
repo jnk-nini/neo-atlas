@@ -4,7 +4,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 
 export default [
-  { ignores: ["dist", "node_modules"] },
+  { ignores: ["dist", "node_modules", "playwright-report", "test-results"] },
   js.configs.recommended,
   {
     files: ["src/**/*.{js,jsx}"],
@@ -22,7 +22,7 @@ export default [
     },
   },
   {
-    files: ["api/**/*.js", "tests/**/*.js", "*.config.js"],
-    languageOptions: { globals: globals.node, sourceType: "module" },
+    files: ["api/**/*.js", "tests/**/*.js", "e2e/**/*.js", "*.config.js"],
+    languageOptions: { globals: { ...globals.node, ...globals.browser }, sourceType: "module" }, // e2e code also runs inside the page
   },
 ];
