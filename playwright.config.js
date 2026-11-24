@@ -9,7 +9,7 @@ export default defineConfig({
   reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "list",
   use: { baseURL: "http://127.0.0.1:4173", screenshot: "only-on-failure" },
   webServer: {
-    command: "npm run build && npx vite preview --port 4173 --strictPort",
+    command: "npm run build && npx vite preview --host 127.0.0.1 --port 4173 --strictPort",
     url: "http://127.0.0.1:4173",
     timeout: 120_000,
     reuseExistingServer: !process.env.CI,
